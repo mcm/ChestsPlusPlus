@@ -11,6 +11,7 @@ import com.jamesdpeters.minecraft.chests.PluginConfig;
 import com.jamesdpeters.minecraft.chests.serialize.SpigotConfig;
 import com.jamesdpeters.minecraft.chests.storage.chestlink.ChestLinkStorage;
 import com.jamesdpeters.minecraft.chests.storage.chestlink.ChestLinkStorageType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,6 +37,8 @@ public class HopperFilterListener implements Listener {
     public void onHopperMoveEvent(InventoryMoveItemEvent event) {
         //TO HOPPER
         if(event.getDestination().getHolder() instanceof Hopper){
+            if(!HopperFilter.hasFilters(event.getDestination().getLocation().getBlock())) return;
+
             if(event.getDestination().getLocation() != null){
                 // If the event is cancelled by other plugin
                 if(event.isCancelled()) return;
@@ -49,7 +52,8 @@ public class HopperFilterListener implements Listener {
 
             // Item shouldn't be allowed
             if (event.isCancelled() && ServerType.getType() == ServerType.Type.PAPER) {
-                int index = event.getSource().first(event.getItem());
+                int index = event.getSource().first(event.getItem().getType());
+
                 int hopperAmount = SpigotConfig.getWorldSettings(event.getSource().getLocation()).getHopperAmount();
 
                 // Loop over the inventory until next item is found, if no item found return.
@@ -76,7 +80,7 @@ public class HopperFilterListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void fromHopper(InventoryMoveItemEvent event){
         //FROM HOPPER
-        if (event.getInitiator().getHolder() instanceof Hopper) {
+        if (event.getSource().getHolder() instanceof Hopper) {
             Location location = event.getDestination().getLocation();
             ChestLinkStorageType storageType = Config.getChestLink();
             if (storageType == null) return;

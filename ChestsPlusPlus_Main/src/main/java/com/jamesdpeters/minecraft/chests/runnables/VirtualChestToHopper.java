@@ -36,6 +36,8 @@ public class VirtualChestToHopper extends BukkitRunnable {
                 if (location.getLocation() != null) {
                     if (!Utils.isLocationChunkLoaded(location.getLocation()) || !location.getLocation().getChunk().isEntitiesLoaded())
                         continue;
+                    if(storage.getInventory().isEmpty()) continue;
+
                     Location below = location.getLocation().clone().subtract(0, 1, 0);
                     if (below.getBlock().getState() instanceof Hopper hopper) {
                         if (below.getBlock().isBlockIndirectlyPowered() || below.getBlock().isBlockPowered()) {
@@ -53,6 +55,6 @@ public class VirtualChestToHopper extends BukkitRunnable {
 
     public static boolean move(Location targetLocation, Inventory source, Inventory target) {
         int hopperAmount = SpigotConfig.getWorldSettings(targetLocation.getWorld()).getHopperAmount();
-        return Utils.hopperMove(source, hopperAmount, target, HopperFilter.getHopperFilters(targetLocation.getBlock()));
+        return Utils.hopperMove(source, hopperAmount, target);
     }
 }
